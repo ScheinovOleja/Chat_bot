@@ -1,0 +1,124 @@
+TOKEN = 'your_token'
+GROUP_ID = your_group_id
+
+INTENTS = [
+    {
+        'name': 'Приветствие',
+        'tokens': ("прив", "даров", 'здравст'),
+        'scenario': None,
+        'answer': 'Привет. Я бот для заказа авиабилетов.\n'
+                  'Мои команды:\n'
+                  '/ticket - заказать билет\n'
+                  '/help - справка о моей работе'
+    },
+    {
+        'name': 'Помощь по по боту',
+        'tokens': ("помощь", "помоги", "как", "/help"),
+        'scenario': None,
+        'answer': 'Я бот для заказа авиабилетов.\n'
+                  'Я могу заказать для вас билет.\n'
+                  'Мои команды\n'
+                  '/ticket - заказать билет\n'
+                  '/help - справка о моей работе'
+    },
+    {
+        'name': 'Регистрация',
+        'tokens': ("заказ", "купить", "билет", "хочу", "/ticket"),
+        'scenario': 'registration',
+        'answer': None
+    },
+]
+
+SCENARIOS = {
+    'registration': {
+        'first_step': 'step1',
+        'steps': {
+            'step1':
+                {
+                    'text': 'Введите город отправления!',
+                    'failure_text': 'К сожалению из этого города не ходят наши рейсы. Наши рейсы есть в городах:\n'
+                                    '{dep_val_city}',
+                    'handler': 'handle_departure_city',
+                    'next_step': 'step2'
+                },
+            'step2':
+                {
+                    'text': 'Введите город назначения!',
+                    'failure_text': 'К сожалению в этот город не ходят наши рейсы. Наши рейсы есть в городах:\n'
+                                    '{dest_val_city}',
+                    'handler': 'handle_destination_city',
+                    'next_step': 'step3'
+                },
+            'step3':
+                {
+                    'text': 'Введите дату желаемого отправления в формате ДД.ММ.ГГГГ',
+                    'failure_text': '{date_fail_text}',
+                    'handler': 'handle_departure_date',
+                    'next_step': 'step4'
+                },
+            'step4':
+                {
+                    'text': 'Вот список 5 ближайших рейсов:\n{list_flight}\nВведите номер нужного рейса',
+                    'failure_text': 'Вы ввели неверный номер рейса',
+                    'handler': 'handle_num_flight',
+                    'next_step': 'step5'
+                },
+            'step5':
+                {
+                    'text': 'Сколько мест бронировать? (от 1 до 5)',
+                    'failure_text': 'Неверное количество, повторите попытку!',
+                    'handler': 'handle_num_seats',
+                    'next_step': 'step6'
+                },
+            'step6':
+                {
+                    'text': 'Напишите комментарий к заказу!',
+                    'failure_text': None,
+                    'handler': 'handle_comment',
+                    'next_step': 'step7'
+                },
+            'step7':
+                {
+                    'text': 'Введите номер телефона в формате 8XXXXXXXXXX',
+                    'failure_text': 'Неккоректный номер. Повторите попытку!',
+                    'handler': 'handle_phone_number',
+                    'next_step': 'step8'
+                },
+            'step8':
+                {
+                    'text': 'Данные для заказа:\n'
+                            'Город отправления - {departure_city}\n'
+                            'Город назначения - {destination_city}\n'
+                            'Дата отправления - {departure_date}\n'
+                            'Выбранный рейс - {num_flight}\n'
+                            'Количество мест - {num_seats}\n'
+                            'Номер телефона - {phone_number}\n'
+                            'Комментарий к заказу:\n'
+                            '{comment}\n'
+                            'Все верно? (да или нет)',
+                    'failure_text': 'Не понимаю вас. Попробуйте снова!',
+                    'handler': 'handle_answer',
+                    'next_step': 'step9'
+                },
+            'step9':
+                {
+                    'text': 'Спасибо, что выбрали нас!). Мы с вами свяжемся по этому телефону - {phone_number}',
+                    'image': 'generate_ticket_handle',
+                    'failure_text': None,
+                    'handler': None,
+                    'next_step': None
+                },
+        }
+    },
+}
+
+DEFAULT_ANSWER = 'Не знаю как на это ответить. Я бот для заказа авиабилетов. Мои команды:\n' \
+                 '/ticket - заказать билет\n' \
+                 '/help - справка о моей работе'
+
+DB_CONFIG = dict(
+    provider='postgres',
+    user='postgres',
+    host='localhost',
+    database='chat_bot'
+)
